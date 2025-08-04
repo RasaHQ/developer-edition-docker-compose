@@ -75,13 +75,17 @@ jobs:
               echo "image_tag_changed=false" >> $GITHUB_OUTPUT
             fi
 
+        - name: Create source branch name
+          if: steps.check_image_tag.outputs.image_tag_changed == 'true'
+          run: |
+            echo "SOURCE_BRANCH=update-rasa-pro-image-tag-to-${LATEST_RASA_PRO_VERSION}" >> $GITHUB_ENV
+
         - name: Commit and push changes
           id: commit_push_changes
           if: steps.check_image_tag.outputs.image_tag_changed == 'true'
           run: |
             git config user.name "rasabot"
             git config user.email "rasabot@rasa.com"
-            echo "SOURCE_BRANCH=update-rasa-pro-image-tag-to-$LATEST_RASA_PRO_VERSION" >> $GITHUB_ENV
             git checkout -b ${{ env.SOURCE_BRANCH }}
             git add docker-compose.yml
             git commit -m "Update Rasa Pro image tag to ${{ env.LATEST_RASA_PRO_VERSION }}"
