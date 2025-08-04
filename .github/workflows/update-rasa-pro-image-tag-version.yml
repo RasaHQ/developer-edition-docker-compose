@@ -64,7 +64,7 @@ jobs:
           run: |
             if [ "$latest_tag" != ""No updates." ]; then
               echo "Image tag changed from $current_tag to $latest_tag"
-              sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro::$current_tag|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$latest_tag|" docker-compose.yml
+              sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$current_tag|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$latest_tag|" docker-compose.yml
               echo "image_tag_changed=true" >> $GITHUB_OUTPUT
             else
               echo "Image tag is already up-to-date."

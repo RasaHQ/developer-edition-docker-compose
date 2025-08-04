@@ -1,4 +1,6 @@
 import os
+import sys
+from typing import Optional
 from pep440_version_utils import Version, is_valid_version
 
 RASA_PRO_IMAGE_TAG = "europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro"
@@ -34,9 +36,7 @@ def update_rasa_pro_image_tag(
         print(f"Keeping current Rasa Pro image tag: {current_image_tag}")
         return None
 
-    updated_image_tag = f"{RASA_PRO_IMAGE_TAG}:{latest_image_tag}"
-    print(f"Updating Rasa Pro image tag to: {updated_image_tag}")
-    return updated_image_tag
+    return latest_image_tag
 
 
 if __name__ == "__main__":
