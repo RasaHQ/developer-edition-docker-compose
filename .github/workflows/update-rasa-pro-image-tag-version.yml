@@ -68,7 +68,6 @@ jobs:
           run: |
             if [ "$LATEST_TAG" != "No updates." ]; then
               echo "Image tag changed from $CURRENT_RASA_PRO_VERSION to $LATEST_TAG"
-              sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$CURRENT_RASA_PRO_VERSION|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$LATEST_TAG|" docker-compose.yml
               echo "image_tag_changed=true" >> $GITHUB_OUTPUT
             else
               echo "Image tag is already up-to-date."
@@ -78,15 +77,29 @@ jobs:
         - name: Create source branch name
           if: steps.check_image_tag.outputs.image_tag_changed == 'true'
           run: |
-            echo "SOURCE_BRANCH=update-rasa-pro-image-tag-to-${LATEST_RASA_PRO_VERSION}" >> $GITHUB_ENV
+            echo "SOURCE_BRANCH=update-rasa-pro-image-tag-to-${LATEST_RASA_PRO_VERSION}-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
-        - name: Commit and push changes
+        - name: Set up git user
+          if: steps.check_image_tag.outputs.image_tag_changed == 'true'
+          run: |
+            git config --global user.name "rasabot"
+            git config --global user.email "rasabot@rasa.com"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+
+        - name: Checkout source branch
+          if: steps.check_image_tag.outputs.image_tag_changed == 'true'
+          run: |
+            git fetch origin
+            git checkout -b ${{ env.SOURCE_BRANCH }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+
+        - name: Update file, commit and push changes
           id: commit_push_changes
           if: steps.check_image_tag.outputs.image_tag_changed == 'true'
           run: |
-            git config user.name "rasabot"
-            git config user.email "rasabot@rasa.com"
-            git checkout -b ${{ env.SOURCE_BRANCH }}
+            sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$CURRENT_RASA_PRO_VERSION|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$LATEST_TAG|" docker-compose.yml
             git add docker-compose.yml
             git commit -m "Update Rasa Pro image tag to ${{ env.LATEST_RASA_PRO_VERSION }}"
             git push origin ${{ env.SOURCE_BRANCH }}
