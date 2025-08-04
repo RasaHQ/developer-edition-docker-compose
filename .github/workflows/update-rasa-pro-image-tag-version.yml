@@ -49,12 +49,16 @@ jobs:
             should_update=$(python scripts/compare_rasa_pro_versions.py)
             echo "should_update=${should_update}" >> $GITHUB_OUTPUT
 
+        - name: Extract current Rasa Pro version from docker-compose.yml
+          id: extract_current_version
+          run: |
+            current_version=$(grep -m 1 'image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:' docker-compose.yml | awk -F ':' '{print $3}')
+            echo "CURRENT_RASA_PRO_VERSION=${current_version}" >> $GITHUB_ENV
+
         - name: Update Rasa Pro Image Tag
           id: update_image_tag
           if: (github.event_name == 'repository_dispatch' && steps.compare_versions.outputs.should_update == 'true') || github.event_name != 'repository_dispatch'
           run: |
-            current_tag=$(grep -m 1 'image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:' docker-compose.yml | awk -F ':' '{print $3}')
-            echo "CURRENT_RASA_PRO_VERSION=${current_tag}" >> $GITHUB_ENV
             latest_tag=$(python scripts/update_rasa_pro_image_tag.py)
             echo "latest_tag=${latest_tag}" >> $GITHUB_OUTPUT
 
