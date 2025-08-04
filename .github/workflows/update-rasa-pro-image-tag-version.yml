@@ -60,15 +60,15 @@ jobs:
           if: (github.event_name == 'repository_dispatch' && steps.compare_versions.outputs.should_update == 'true') || github.event_name != 'repository_dispatch'
           run: |
             latest_tag=$(python scripts/update_rasa_pro_image_tag.py)
-            echo "latest_tag=${latest_tag}" >> $GITHUB_OUTPUT
+            echo "LATEST_TAG=${latest_tag}" >> $GITHUB_ENV
 
         - name: Check if image tag changed
           id: check_image_tag
           if: steps.update_image_tag.outcome == 'success'
           run: |
-            if [ "$latest_tag" != "No updates." ]; then
-              echo "Image tag changed from $current_tag to $latest_tag"
-              sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$current_tag|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$latest_tag|" docker-compose.yml
+            if [ "$LATEST_TAG" != "No updates." ]; then
+              echo "Image tag changed from $CURRENT_RASA_PRO_VERSION to $LATEST_TAG"
+              sed -i "s|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$CURRENT_RASA_PRO_VERSION|image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:$LATEST_TAG|" docker-compose.yml
               echo "image_tag_changed=true" >> $GITHUB_OUTPUT
             else
               echo "Image tag is already up-to-date."
