@@ -1,9 +1,6 @@
 name: update-rasa-pro-image-tag-version.yml
 on:
     workflow_dispatch:
-    # push required only for testing purposes
-    # to be removed before merging
-    push:
     repository_dispatch:
       types: [trigger-image-tag-update]
 
@@ -20,7 +17,7 @@ jobs:
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
           with:
             fetch-depth: 0
-            #ref: "main" # Use main branch for the workflow
+            ref: "main" # Use main branch for the workflow
 
         - name: Set up Python ${{ env.PYTHON_VERSION }} 🐍
           uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
@@ -82,18 +79,11 @@ jobs:
           run: |
             echo "SOURCE_BRANCH=update-rasa-pro-image-tag-to-${LATEST_RASA_PRO_VERSION}-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
-        - name: Set up git user
+        - name: Set up git user and checkout source branch
           if: steps.check_image_tag.outputs.image_tag_changed == 'true'
           run: |
             git config --global user.name "rasabot"
             git config --global user.email "rasabot@rasa.com"
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-
-        - name: Checkout source branch
-          if: steps.check_image_tag.outputs.image_tag_changed == 'true'
-          run: |
-            git checkout main
             git checkout -b ${{ env.SOURCE_BRANCH }}
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
