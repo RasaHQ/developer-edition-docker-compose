@@ -91,7 +91,7 @@ jobs:
             git commit -m "Update Rasa Pro image tag to ${{ env.LATEST_RASA_PRO_VERSION }}"
             git push origin ${{ env.SOURCE_BRANCH }}
           env:
-            GITHUB_TOKEN: ${{ secrets.RASABOT_GITHUB_TOKEN  }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
         - name: Stop the workflow if no changes were made
           if: steps.check_image_tag.outputs.image_tag_changed == 'false'
@@ -103,7 +103,7 @@ jobs:
           if: steps.commit_push_changes.outcome == 'success'
           uses: devops-infra/action-pull-request@ff118b4a7c24bac5a3c95acef59e9edd1fc37890  #v0.6.0
           with:
-            github_token: ${{ secrets.RASABOT_GITHUB_TOKEN }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
             source_branch: ${{ env.SOURCE_BRANCH }}
             target_branch: "main"
             body: "**Automated pull request for Rasa Pro image tag update.**"
