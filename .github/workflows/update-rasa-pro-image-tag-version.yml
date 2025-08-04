@@ -93,9 +93,7 @@ jobs:
         - name: Checkout source branch
           if: steps.check_image_tag.outputs.image_tag_changed == 'true'
           run: |
-#            temporary checkout to test changes
             git checkout main
-            git pull origin main
             git checkout -b ${{ env.SOURCE_BRANCH }}
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
