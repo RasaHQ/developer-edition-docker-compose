@@ -1,4 +1,13 @@
-name: update-rasa-pro-image-tag-version.yml
+name: Update Rasa Pro Image Tag in Docker Compose file
+#    This workflow updates the Rasa Pro image tag in the `docker-compose.yml` file.
+#    It can be triggered manually or via a repository dispatch event when a Rasa Pro version is released.
+#    If triggered via repository dispatch, it compares the dispatched version with the latest version on PyPI.
+#    If the dispatched version and the latest PyPI version match, it updates the image tag in the Docker Compose file.
+#    If triggered manually, it checks directly for the latest version of Rasa Pro on PyPI.
+#    In either case, the workflow compares the latest version with the current version in the Docker Compose file.
+#    If an update is needed, it creates a new branch, commits the changes, and opens a pull request.
+#    If no update is needed, it stops the workflow without making any changes.
+
 on:
     workflow_dispatch:
     repository_dispatch:
