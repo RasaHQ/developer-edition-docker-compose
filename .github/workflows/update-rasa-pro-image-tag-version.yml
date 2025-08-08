@@ -49,13 +49,16 @@ jobs:
               rasa_pro_version=$(curl -s https://pypi.org/pypi/rasa-pro/json | jq -r '.info.version')
               echo "LATEST_RASA_PRO_VERSION=${rasa_pro_version}" >> $GITHUB_ENV
 
+        - name: Set dispatched version env variable
+          if: github.event_name == 'repository_dispatch'
+          run: |
+            echo "DISPATCHED_RASA_PRO_VERSION=${{ github.event.client_payload.version }}" >> $GITHUB_ENV
+
         - name: Compare pypi version to the dispatched release version
           id: compare_versions
           if: github.event_name == 'repository_dispatch'
           run: |
-            dispatched_version="${{ github.event.client_payload.version }}"
-            echo "DISPATCHED_RASA_PRO_VERSION=${dispatched_version}" >> $GITHUB_ENV
-            should_update=$(python scripts/compare_rasa_pro_versions.py)
+            should_update=$(python scripts/compare_rasa_pro_versions.py | tr -d '\n')
             echo "should_update=${should_update}" >> $GITHUB_OUTPUT
 
         - name: Extract current Rasa Pro version from docker-compose.yml
