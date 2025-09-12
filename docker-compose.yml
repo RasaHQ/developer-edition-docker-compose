@@ -4,7 +4,7 @@ services:
 
   # Run Rasa Pro with the inspector.
   assistant:
-    image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.13.9
+    image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.13.10
     volumes:
       - .:/app
     command:
@@ -28,7 +28,7 @@ services:
 
   # Run the action server.
   action_server:
-    image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.13.9
+    image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.13.10
     volumes:
       - .:/app
     command:
